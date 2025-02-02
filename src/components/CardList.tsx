@@ -39,7 +39,7 @@ export class CardList extends Component<ICardListProps, ICardListState> {
   }
 
   getData() {
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, errorMessage: '' });
 
     getSearchResult(this.props.searchValue)
       .then((data) => this.setState({ data: data.results }))
