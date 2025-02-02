@@ -8,7 +8,10 @@ interface ICard {
 export class Card extends PureComponent<ICard, ICard> {
   constructor(props: ICard) {
     super(props);
-    this.state = { name: 'Card Name', description: 'Card Description' };
+    this.state = {
+      name: this.props.name || 'Card Name',
+      description: this.props.description || 'Card Description',
+    };
   }
 
   render() {

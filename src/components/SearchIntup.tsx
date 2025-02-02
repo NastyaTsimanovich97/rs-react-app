@@ -2,6 +2,6 @@ import { Component } from 'react';
 
 export class SearchInput extends Component {
   render() {
-    return <input placeholder="Input your seacrh" />;
+    return <input placeholder="Input your search" />;
   }
 }
