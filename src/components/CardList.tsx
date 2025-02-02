@@ -17,6 +17,7 @@ interface ICardListProps {
 interface ICardListState {
   isLoading: boolean;
   data: IDataItem[];
+  errorMessage?: string;
 }
 
 export class CardList extends Component<ICardListProps, ICardListState> {
@@ -42,7 +43,7 @@ export class CardList extends Component<ICardListProps, ICardListState> {
 
     getSearchResult(this.props.searchValue)
       .then((data) => this.setState({ data: data.results }))
-      .catch()
+      .catch((error) => this.setState({ errorMessage: error.message }))
       .finally(() => this.setState({ isLoading: false }));
   }
 
@@ -51,6 +52,7 @@ export class CardList extends Component<ICardListProps, ICardListState> {
 
     return (
       <>
+        {this.state.errorMessage && <p>{this.state.errorMessage}</p>}
         {this.state.isLoading ? (
           <SkeletonCardList />
         ) : (

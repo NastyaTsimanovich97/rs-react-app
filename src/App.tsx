@@ -2,6 +2,8 @@ import { Component } from 'react';
 import './App.css';
 import { MainSeaction } from './sections/MainSection';
 import { HeaderSection } from './sections/HeaderSection';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import ErrorButton from './components/ErrorButton';
 
 interface IAppState {
   searchValue: string;
@@ -22,10 +24,11 @@ export class App extends Component<object, IAppState> {
 
   render() {
     return (
-      <>
+      <ErrorBoundary>
         <HeaderSection onUpdateSearch={this.onUpdateSearch} />
         <MainSeaction searchValue={this.state.searchValue} />
-      </>
+        <ErrorButton />
+      </ErrorBoundary>
     );
   }
 }
