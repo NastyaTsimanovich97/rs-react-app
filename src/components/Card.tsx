@@ -2,6 +2,7 @@ import { PureComponent } from 'react';
 
 interface ICard {
   name?: string;
+  authors?: string;
   description?: string;
 }
 
@@ -10,6 +11,7 @@ export class Card extends PureComponent<ICard, ICard> {
     super(props);
     this.state = {
       name: this.props.name || 'Card Name',
+      authors: this.props.authors || 'Card Authors',
       description: this.props.description || 'Card Description',
     };
   }
@@ -17,8 +19,15 @@ export class Card extends PureComponent<ICard, ICard> {
   render() {
     return (
       <div className="card-item">
-        <h3>{this.state.name}</h3>
-        <p>{this.state.description}</p>
+        <h2>{this.state.name}</h2>
+        <p>
+          <b>Authors: </b>
+          {this.state.authors}
+        </p>
+        <p>
+          <b>Summary: </b>
+          {this.state.description}
+        </p>
       </div>
     );
   }

@@ -61,7 +61,8 @@ export class CardList extends Component<ICardListProps, ICardListState> {
               <Card
                 key={item.id}
                 name={item.title}
-                description={`Author: ${item.authors.map((i) => i.name).join(';')}. Summary: ${item.summaries.join('.')}.`}
+                authors={item.authors.map((i) => i.name).join(';')}
+                description={item.summaries.join('.')}
               />
             ))}
           </div>

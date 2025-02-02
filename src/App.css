@@ -41,3 +41,37 @@
 .error-button {
   background-color: #ed6565;
 }
+
+.skeleton-card-item {
+  width: 300px;
+  height: 300px;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0px 5px 10px 2px #f4f4f4;
+}
+
+.skeleton-content {
+  background-color: #f0f0f0;
+  position: relative;
+}
+
+.skeleton-content::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 100%;
+  box-shadow: 0 0 80px 20px #fff;
+  animation: skeleton-slide 1.5s infinite ease-in-out;
+}
+
+@keyframes skeleton-slide {
+  from {
+    left: -100px;
+  }
+  to {
+    left: calc(100% + 100px);
+  }
+}
