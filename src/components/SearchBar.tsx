@@ -5,7 +5,7 @@ interface ISearchBarState {
 }
 
 interface ISearchBarProps {
-  onUpdateSearch?: (value: string) => void;
+  onUpdateSearch: (value: string) => void;
 }
 
 export class SearchBar extends Component<ISearchBarProps, ISearchBarState> {
@@ -32,6 +32,8 @@ export class SearchBar extends Component<ISearchBarProps, ISearchBarState> {
     const value = this.state.value.trim();
     localStorage.setItem('searchValue', value);
     this.setState({ value });
+
+    this.props.onUpdateSearch(value);
   }
 
   render() {

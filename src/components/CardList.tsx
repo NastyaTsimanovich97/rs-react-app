@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { Card } from './Card';
+import { SkeletonCardList } from './SkeletonCardList';
 import { getSearchResult } from '../service/getSearchResult';
 
 interface IDataItem {
@@ -10,7 +11,7 @@ interface IDataItem {
 }
 
 interface ICardListProps {
-  search?: string;
+  searchValue: string;
 }
 
 interface ICardListState {
@@ -22,11 +23,24 @@ export class CardList extends Component<ICardListProps, ICardListState> {
   constructor(props: ICardListProps) {
     super(props);
     this.state = { isLoading: false, data: [] };
+
+    this.getData = this.getData.bind(this);
   }
 
   componentDidMount(): void {
+    this.getData();
+  }
+
+  componentDidUpdate(prevProps: Readonly<ICardListProps>): void {
+    if (prevProps.searchValue !== this.props.searchValue) {
+      this.getData();
+    }
+  }
+
+  getData() {
     this.setState({ isLoading: true });
-    getSearchResult()
+
+    getSearchResult(this.props.searchValue)
       .then((data) => this.setState({ data: data.results }))
       .catch()
       .finally(() => this.setState({ isLoading: false }));
@@ -36,18 +50,21 @@ export class CardList extends Component<ICardListProps, ICardListState> {
     const { data } = this.state;
 
     return (
-      <div>
-        <h2>Results</h2>
-        <div className="card-container">
-          {data.map((item) => (
-            <Card
-              key={item.id}
-              name={item.title}
-              description={`Author: ${item.authors.map((i) => i.name).join(';')}. Summary: ${item.summaries.join('.')}.`}
-            />
-          ))}
-        </div>
-      </div>
+      <>
+        {this.state.isLoading ? (
+          <SkeletonCardList />
+        ) : (
+          <div className="card-container">
+            {data.map((item) => (
+              <Card
+                key={item.id}
+                name={item.title}
+                description={`Author: ${item.authors.map((i) => i.name).join(';')}. Summary: ${item.summaries.join('.')}.`}
+              />
+            ))}
+          </div>
+        )}
+      </>
     );
   }
 }
