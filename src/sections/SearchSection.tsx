@@ -1,14 +1,8 @@
 import { Component } from 'react';
-import { SearchInput } from '../components/SearchIntup';
-import { SearchButton } from '../components/SearchButton';
+import { SearchBar } from '../components/SearchBar';
 
 export class SearchSection extends Component {
   render() {
-    return (
-      <div className="search-container">
-        <SearchInput />
-        <SearchButton />
-      </div>
-    );
+    return <SearchBar />;
   }
 }
