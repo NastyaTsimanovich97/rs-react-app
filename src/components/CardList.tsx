@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from './Card';
 import { SkeletonCardList } from './SkeletonCardList';
 import { getSearchResult } from '../service/getSearchResult';
@@ -14,60 +14,42 @@ interface ICardListProps {
   searchValue: string;
 }
 
-interface ICardListState {
-  isLoading: boolean;
-  data: IDataItem[];
-  errorMessage?: string;
-}
+export function CardList(props: ICardListProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [data, setData] = useState<IDataItem[]>([]);
 
-export class CardList extends Component<ICardListProps, ICardListState> {
-  constructor(props: ICardListProps) {
-    super(props);
-    this.state = { isLoading: false, data: [] };
+  useEffect(() => {
+    const getData = () => {
+      setIsLoading(true);
+      setErrorMessage('');
 
-    this.getData = this.getData.bind(this);
-  }
+      getSearchResult(props.searchValue)
+        .then((data) => setData(data.results))
+        .catch((error) => setErrorMessage(error.message))
+        .finally(() => setIsLoading(false));
+    };
 
-  componentDidMount(): void {
-    this.getData();
-  }
+    getData();
+  }, [props.searchValue]);
 
-  componentDidUpdate(prevProps: Readonly<ICardListProps>): void {
-    if (prevProps.searchValue !== this.props.searchValue) {
-      this.getData();
-    }
-  }
-
-  getData() {
-    this.setState({ isLoading: true, errorMessage: '' });
-
-    getSearchResult(this.props.searchValue)
-      .then((data) => this.setState({ data: data.results }))
-      .catch((error) => this.setState({ errorMessage: error.message }))
-      .finally(() => this.setState({ isLoading: false }));
-  }
-
-  render() {
-    const { data } = this.state;
-
-    return (
-      <>
-        {this.state.errorMessage && <p>{this.state.errorMessage}</p>}
-        {this.state.isLoading ? (
-          <SkeletonCardList />
-        ) : (
-          <div className="card-container">
-            {data.map((item) => (
-              <Card
-                key={item.id}
-                name={item.title}
-                authors={item.authors.map((i) => i.name).join(';')}
-                description={item.summaries.join('.')}
-              />
-            ))}
-          </div>
-        )}
-      </>
-    );
-  }
+  return (
+    <>
+      {errorMessage && <p>{errorMessage}</p>}
+      {isLoading ? (
+        <SkeletonCardList />
+      ) : (
+        <div className="card-container">
+          {data.map((item) => (
+            <Card
+              key={item.id}
+              name={item.title}
+              authors={item.authors.map((i) => i.name).join(';')}
+              description={item.summaries.join('.')}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
 }
