@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useParams, useNavigate, useLocation } from 'react-router';
 import { getSearchItem } from '../services/getSearchItem';
 import { SkeletonCardDetails } from './SkeletonCardDetails';
 
@@ -12,35 +12,34 @@ interface IDataItem {
   subjects: string[];
 }
 
-interface ICardProps {
-  id: string;
-}
-
-export function CardDetails(props: ICardProps) {
+export function CardDetails() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [data, setData] = useState<IDataItem>();
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
 
   useEffect(() => {
     const getData = () => {
-      setIsLoading(true);
+      if (params.id) {
+        setIsLoading(true);
 
-      getSearchItem(props.id)
-        .then((data) => {
-          setData(data);
-        })
-        .catch((error) => setErrorMessage(error.message))
-        .finally(() => setIsLoading(false));
+        getSearchItem(params.id)
+          .then((data) => {
+            setData(data);
+          })
+          .catch((error) => setErrorMessage(error.message))
+          .finally(() => setIsLoading(false));
+      }
     };
 
     getData();
-  }, [props.id]);
+  }, [params.id]);
 
   const handleClose = () => {
-    searchParams.delete('details');
-    setSearchParams(searchParams);
+    navigate(`/${location.search}`);
   };
 
   return (

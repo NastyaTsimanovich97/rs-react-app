@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, useNavigate, useLocation } from 'react-router';
 import { Card } from './Card';
 import { SkeletonCardList } from './SkeletonCardList';
 import { getSearchResult } from '../services/getSearchResult';
@@ -25,6 +25,8 @@ export function CardList(props: ICardListProps) {
   const [errorMessage, setErrorMessage] = useState('');
   const [data, setData] = useState<IDataItem[]>([]);
 
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initPage = searchParams.get('page')
@@ -68,8 +70,7 @@ export function CardList(props: ICardListProps) {
   };
 
   const onCardClick = (id: string) => {
-    searchParams.set('details', id);
-    setSearchParams(searchParams);
+    navigate(`details/${id}${location.search}`);
   };
 
   return (

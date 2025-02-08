@@ -1,16 +1,16 @@
-import { useSearchParams } from 'react-router';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import ErrorButton from '../components/ErrorButton';
 import { HeaderSection } from '../sections/HeaderSection';
 import { MainSection } from '../sections/MainSection';
-import { CardDetails } from '../components/CardDetails';
 
 function SearchPage() {
   const [searchValue, setSearchValue] = useLocalStorage();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const detailsId = searchParams.get('details');
+  const detailsId = params.id;
 
   const onUpdateSearch = (searchValue: string) => {
     setSearchValue(searchValue || '');
@@ -18,8 +18,7 @@ function SearchPage() {
 
   const handleCloseDetails = () => {
     if (detailsId) {
-      searchParams.delete('details');
-      setSearchParams(searchParams);
+      navigate(`/${location.search}`);
     }
   };
 
@@ -33,7 +32,7 @@ function SearchPage() {
         />
         <ErrorButton />
       </div>
-      {detailsId && <CardDetails id={detailsId} />}
+      <Outlet />
     </div>
   );
 }
