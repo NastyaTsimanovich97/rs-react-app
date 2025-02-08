@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 import { Card } from './Card';
 import { SkeletonCardList } from './SkeletonCardList';
 import { getSearchResult } from '../services/getSearchResult';
 import Pagination from './Pagination';
 import { getURLParams } from '../utils/getURLParams.util';
-import { useSearchParams } from 'react-router';
 
 interface IDataItem {
   id: string;
   title: string;
   authors: { name: string }[];
   summaries: string[];
+  bookshelves: string[];
+  languages: string[];
+  subjects: string[];
 }
 
 interface ICardListProps {
@@ -27,6 +30,7 @@ export function CardList(props: ICardListProps) {
   const initPage = searchParams.get('page')
     ? Number(searchParams.get('page'))
     : 1;
+
   const [page, setPage] = useState<number | null>(initPage);
   const [nextPage, setNextPage] = useState<string | null>(null);
   const [prevPage, setPrevPage] = useState<string | null>(null);
@@ -58,8 +62,14 @@ export function CardList(props: ICardListProps) {
   const onPageChange = (page: string | null) => {
     setPage(page ? Number(page) : null);
     if (page) {
-      setSearchParams({ page });
+      searchParams.set('page', page);
+      setSearchParams(searchParams);
     }
+  };
+
+  const onCardClick = (id: string) => {
+    searchParams.set('details', id);
+    setSearchParams(searchParams);
   };
 
   return (
@@ -75,19 +85,20 @@ export function CardList(props: ICardListProps) {
       {isLoading ? (
         <SkeletonCardList />
       ) : (
-        <div>
-          <div className="card-container">
-            {data.map((item) => (
-              <Card
-                key={item.id}
-                name={item.title}
-                authors={item.authors.map((i) => i.name).join(';')}
-                description={item.summaries.join('.')}
-              />
-            ))}
-          </div>
+        <div className="card-container">
+          {data.map((item) => (
+            <Card
+              key={item.id}
+              id={item.id}
+              name={item.title}
+              authors={item.authors.map((i) => i.name).join(';')}
+              description={item.summaries.join('.')}
+              onClick={onCardClick}
+            />
+          ))}
         </div>
       )}
+      {/* {detailsId && <CardDetails id={detailsId} />} */}
     </>
   );
 }
