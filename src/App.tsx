@@ -1,22 +1,18 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import './App.css';
-import { MainSeaction } from './sections/MainSection';
-import { HeaderSection } from './sections/HeaderSection';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import ErrorButton from './components/ErrorButton';
-import { useLocalStorage } from './hooks/useLocalStorage';
+import SearchPage from './pages/SearchPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 export function App() {
-  const [searchValue, setSearchValue] = useLocalStorage();
-
-  const onUpdateSearch = (searchValue: string) => {
-    setSearchValue(searchValue || '');
-  };
-
   return (
     <ErrorBoundary>
-      <HeaderSection onUpdateSearch={onUpdateSearch} />
-      <MainSeaction searchValue={searchValue} />
-      <ErrorButton />
+      <Router>
+        <Routes>
+          <Route path="/" element={<SearchPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Router>
     </ErrorBoundary>
   );
 }

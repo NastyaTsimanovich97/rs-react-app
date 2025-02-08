@@ -26,9 +26,17 @@
   justify-items: center;
 }
 
-.skeleton-card-item {
-  padding: 2em;
-  box-shadow: 0px 5px 10px 2px #f4f4f4;
+.pagination-wrapper {
+  display: grid;
+  justify-items: end;
+  padding-bottom: 2em;
+}
+
+.pagination-container {
+  display: grid;
+  grid-template-columns: 110px 80px 110px;
+  grid-template-rows: 40px;
+  align-items: center;
 }
 
 .error-button-container {
@@ -40,6 +48,13 @@
 
 .error-button {
   background-color: #ed6565;
+}
+
+.skeleton-line-item {
+  width: 250px;
+  height: 40px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 10px 2px #f4f4f4;
 }
 
 .skeleton-card-item {
