@@ -10,7 +10,11 @@ interface ICardProps {
 
 export function Card(props: ICardProps) {
   return (
-    <div className="card-item" onClick={() => props.onClick(props.id)}>
+    <div
+      data-testid="card-item"
+      className="card-item"
+      onClick={() => props.onClick(props.id)}
+    >
       <h2>{props.name || 'Card Name'}</h2>
       <p>
         <b>Authors: </b>

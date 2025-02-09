@@ -50,7 +50,11 @@ export function CardDetails() {
           <SkeletonCardDetails />
         ) : (
           <div>
-            <button className="close-btn" onClick={handleClose}>
+            <button
+              data-testid="close-btn"
+              className="close-btn"
+              onClick={handleClose}
+            >
               Close
             </button>
             <div>
