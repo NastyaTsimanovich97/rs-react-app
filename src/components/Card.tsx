@@ -1,34 +1,29 @@
-import { PureComponent } from 'react';
+import { spliceDescription } from '../utils/spliceDescription.util';
 
-interface ICard {
+interface ICardProps {
+  id: string;
+  onClick: (id: string) => void;
   name?: string;
   authors?: string;
   description?: string;
 }
 
-export class Card extends PureComponent<ICard, ICard> {
-  constructor(props: ICard) {
-    super(props);
-    this.state = {
-      name: this.props.name || 'Card Name',
-      authors: this.props.authors || 'Card Authors',
-      description: this.props.description || 'Card Description',
-    };
-  }
-
-  render() {
-    return (
-      <div className="card-item">
-        <h2>{this.state.name}</h2>
-        <p>
-          <b>Authors: </b>
-          {this.state.authors}
-        </p>
-        <p>
-          <b>Summary: </b>
-          {this.state.description}
-        </p>
-      </div>
-    );
-  }
+export function Card(props: ICardProps) {
+  return (
+    <div
+      data-testid="card-item"
+      className="card-item"
+      onClick={() => props.onClick(props.id)}
+    >
+      <h2>{props.name || 'Card Name'}</h2>
+      <p>
+        <b>Authors: </b>
+        {props.authors || 'Card Authors'}
+      </p>
+      <p>
+        <b>Summary: </b>
+        {spliceDescription(props.description || 'Card Description')}
+      </p>
+    </div>
+  );
 }

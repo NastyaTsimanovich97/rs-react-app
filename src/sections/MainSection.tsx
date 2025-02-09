@@ -1,17 +1,15 @@
-import { Component } from 'react';
 import { CardList } from '../components/CardList';
 
-interface IMainSeactionProps {
+interface IMainSectionProps {
   searchValue: string;
+  handleClick: () => void;
 }
 
-export class MainSeaction extends Component<IMainSeactionProps> {
-  render() {
-    return (
-      <div>
-        <h2>Results</h2>
-        <CardList searchValue={this.props.searchValue} />
-      </div>
-    );
-  }
+export function MainSection(props: IMainSectionProps) {
+  return (
+    <div onClick={props.handleClick}>
+      <h2>Results</h2>
+      <CardList searchValue={props.searchValue} />
+    </div>
+  );
 }

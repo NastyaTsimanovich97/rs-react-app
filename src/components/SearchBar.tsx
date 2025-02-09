@@ -1,52 +1,34 @@
-import { Component } from 'react';
-
-interface ISearchBarState {
-  value: string;
-}
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface ISearchBarProps {
   onUpdateSearch: (value: string) => void;
 }
 
-export class SearchBar extends Component<ISearchBarProps, ISearchBarState> {
-  constructor(props: ISearchBarProps) {
-    super(props);
+export function SearchBar(props: ISearchBarProps) {
+  const [searchValue, setSearchValue] = useLocalStorage();
 
-    this.state = { value: '' };
-
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleButtonClick = this.handleButtonClick.bind(this);
-  }
-
-  componentDidMount(): void {
-    const searchValue = localStorage.getItem('searchValue');
-    this.setState({ value: searchValue || '' });
-  }
-
-  handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    this.setState({ value });
-  }
+    setSearchValue(value);
+  };
 
-  handleButtonClick() {
-    const value = this.state.value.trim();
-    localStorage.setItem('searchValue', value);
-    this.setState({ value });
+  const handleButtonClick = () => {
+    const value = searchValue.trim();
 
-    this.props.onUpdateSearch(value);
-  }
+    setSearchValue(value);
+    props.onUpdateSearch(value);
+  };
 
-  render() {
-    return (
-      <div className="search-container">
-        <input
-          placeholder="Input your search"
-          type="text"
-          value={this.state.value}
-          onChange={this.handleInputChange}
-        />
-        <button onClick={this.handleButtonClick}>Search</button>
-      </div>
-    );
-  }
+  return (
+    <div className="search-container">
+      <input
+        data-testid="search-input-field"
+        placeholder="Input your search"
+        type="text"
+        value={searchValue}
+        onChange={handleInputChange}
+      />
+      <button onClick={handleButtonClick}>Search</button>
+    </div>
+  );
 }
