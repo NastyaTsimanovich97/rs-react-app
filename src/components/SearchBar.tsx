@@ -22,6 +22,7 @@ export function SearchBar(props: ISearchBarProps) {
   return (
     <div className="search-container">
       <input
+        data-testid="search-input-field"
         placeholder="Input your search"
         type="text"
         value={searchValue}

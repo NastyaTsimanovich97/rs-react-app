@@ -43,7 +43,7 @@ export function CardDetails() {
   };
 
   return (
-    <div>
+    <div data-testid="card-details">
       {errorMessage && <p>{errorMessage}</p>}
       <div className="card-details-container">
         {isLoading ? (

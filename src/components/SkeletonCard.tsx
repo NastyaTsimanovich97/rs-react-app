@@ -1,3 +1,8 @@
 export function SkeletonCard() {
-  return <div className="skeleton-card-item skeleton-content" />;
+  return (
+    <div
+      data-testid="skeleton-card"
+      className="skeleton-card-item skeleton-content"
+    />
+  );
 }

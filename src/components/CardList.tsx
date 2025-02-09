@@ -86,20 +86,23 @@ export function CardList(props: ICardListProps) {
       {isLoading ? (
         <SkeletonCardList />
       ) : (
-        <div className="card-container">
-          {data.map((item) => (
-            <Card
-              key={item.id}
-              id={item.id}
-              name={item.title}
-              authors={item.authors.map((i) => i.name).join(';')}
-              description={item.summaries.join('.')}
-              onClick={onCardClick}
-            />
-          ))}
+        <div className="card-container" data-testid="card-list">
+          {data.length ? (
+            data.map((item) => (
+              <Card
+                key={item.id}
+                id={item.id}
+                name={item.title}
+                authors={item.authors.map((i) => i.name).join(';')}
+                description={item.summaries.join('.')}
+                onClick={onCardClick}
+              />
+            ))
+          ) : (
+            <p>Results are not found. Please, try with another query</p>
+          )}
         </div>
       )}
-      {/* {detailsId && <CardDetails id={detailsId} />} */}
     </>
   );
 }

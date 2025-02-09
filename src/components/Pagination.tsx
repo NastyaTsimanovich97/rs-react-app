@@ -25,6 +25,7 @@ function Pagination({
       ) : (
         <div className="pagination-container">
           <button
+            data-testid="prev-pagination-btn"
             disabled={!prevPage || isLoading}
             onClick={() => {
               setIsPaginationClick(true);
@@ -35,6 +36,7 @@ function Pagination({
           </button>
           <p>{page}</p>
           <button
+            data-testid="next-pagination-btn"
             disabled={!nextPage || isLoading}
             onClick={() => {
               setIsPaginationClick(true);

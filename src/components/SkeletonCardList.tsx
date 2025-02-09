@@ -2,7 +2,7 @@ import { SkeletonCard } from './SkeletonCard';
 
 export function SkeletonCardList() {
   return (
-    <div className="card-container">
+    <div data-testid="skeleton-card-list" className="card-container">
       <SkeletonCard />
       <SkeletonCard />
       <SkeletonCard />
