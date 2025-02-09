@@ -60,7 +60,7 @@ describe('CardDetails Component', () => {
   it('renders the CardDetails with the correct data', async () => {
     getSearchItemSpy.mockResolvedValue(mockCardListData.results[0]);
 
-    await act(() =>
+    await act(async () =>
       render(
         <MemoryRouter>
           <CardDetails />
@@ -79,7 +79,7 @@ describe('CardDetails Component', () => {
     const handleUseNavigationSpy = vi.fn();
     useNavigateSpy.mockImplementation(() => handleUseNavigationSpy);
 
-    await act(() =>
+    await act(async () =>
       render(
         <MemoryRouter>
           <CardDetails />
@@ -96,7 +96,7 @@ describe('CardDetails Component', () => {
     const errorMessage = 'Failed to fetch data';
     getSearchItemSpy.mockRejectedValue(new Error(errorMessage));
 
-    await act(() =>
+    await act(async () =>
       render(
         <MemoryRouter>
           <CardDetails />
