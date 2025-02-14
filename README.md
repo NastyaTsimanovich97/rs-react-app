@@ -8,3 +8,4 @@ This project provides search books tool.
 - Command `npm run dev` runs application
 - Command `npm run lint` checks ESLint issues
 - Command `npm run format:fix` formats any Prettier issues
+- Command `npm run test` run tests with coverage
