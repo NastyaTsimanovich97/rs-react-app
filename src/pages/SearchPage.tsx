@@ -3,6 +3,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import ErrorButton from '../components/ErrorButton';
 import { HeaderSection } from '../sections/HeaderSection';
 import { MainSection } from '../sections/MainSection';
+import { DownloadSection } from '../sections/DowloadSection';
 
 function SearchPage() {
   const [searchValue, setSearchValue] = useLocalStorage();
@@ -23,17 +24,20 @@ function SearchPage() {
   };
 
   return (
-    <div className={detailsId ? 'search-page-wrapper' : ''}>
-      <div>
-        <HeaderSection onUpdateSearch={onUpdateSearch} />
-        <MainSection
-          searchValue={searchValue}
-          handleClick={handleCloseDetails}
-        />
-        <ErrorButton />
+    <>
+      <div className={detailsId ? 'search-page-wrapper' : ''}>
+        <div>
+          <HeaderSection onUpdateSearch={onUpdateSearch} />
+          <MainSection
+            searchValue={searchValue}
+            handleClick={handleCloseDetails}
+          />
+          <ErrorButton />
+        </div>
+        <Outlet />
       </div>
-      <Outlet />
-    </div>
+      <DownloadSection />
+    </>
   );
 }
 

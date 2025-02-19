@@ -22,7 +22,14 @@ export function Card(props: ICardProps) {
     event.stopPropagation();
 
     const action = isChecked ? cardDeleted : cardAdded;
-    dispatch(action({ id: props.id }));
+    dispatch(
+      action({
+        id: props.id,
+        name: props.name,
+        description: props.description,
+        authors: props.authors,
+      })
+    );
   };
 
   return (

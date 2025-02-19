@@ -116,6 +116,22 @@
   left: 10px;
 }
 
+.unselect-btn {
+  background-color: #edb0b0;
+}
+
+.download-btn {
+  background-color: #b0d0ed;
+}
+
+.download-container {
+  display: grid;
+  grid-template-columns: auto 200px 200px;
+  grid-template-rows: 50px;
+  gap: 2em;
+  margin: 2em;
+}
+
 .checkbox-container {
   display: grid;
   justify-content: start;
