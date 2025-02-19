@@ -1,7 +1,10 @@
+import { useContext } from 'react';
+import classNames from 'classnames';
 import { cardAdded, cardDeleted } from '../app/cardsSlice';
 import { useAppDispatch } from '../app/hooks';
 import { spliceDescription } from '../utils/spliceDescription.util';
 import { Checkbox } from './Checkbox';
+import ThemeContext from '../context/themeContext';
 
 interface ICardProps {
   id: string;
@@ -14,6 +17,8 @@ interface ICardProps {
 
 export function Card(props: ICardProps) {
   const dispatch = useAppDispatch();
+
+  const theme = useContext(ThemeContext);
 
   const handleCheck = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -35,7 +40,7 @@ export function Card(props: ICardProps) {
   return (
     <div
       data-testid="card-item"
-      className="card-item"
+      className={classNames('card-item', theme)}
       onClick={() => props.onClick(props.id)}
     >
       <Checkbox isChecked={props.isChecked} handleChange={handleCheck} />

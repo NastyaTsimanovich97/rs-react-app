@@ -1,9 +1,19 @@
 #root {
   width: 100%;
-  max-width: 1400px;
+  /* max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem; */
   text-align: center;
+}
+
+.dark {
+  padding: 2rem;
+  background-color: #7d7c7c;
+  color: #f0f0f0;
+}
+
+.light {
+  padding: 2rem;
 }
 
 .search-page-wrapper {
@@ -16,6 +26,7 @@
   display: grid;
   grid-template-columns: auto 150px;
   grid-column-gap: 100px;
+  padding-top: 2em;
 }
 
 .card-item {
@@ -127,12 +138,20 @@
 .download-container {
   display: grid;
   grid-template-columns: auto 200px 200px;
-  grid-template-rows: 50px;
+  grid-template-rows: 60px;
   gap: 2em;
-  margin: 2em;
+  padding: 2em;
+  align-items: center;
 }
 
 .checkbox-container {
   display: grid;
-  justify-content: start;
+  justify-items: start;
+}
+
+.theme-container {
+  display: grid;
+  justify-items: start;
+  grid-template-columns: repeat(2, 150px);
+  gap: 2em;
 }

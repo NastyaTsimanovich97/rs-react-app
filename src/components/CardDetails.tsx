@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
+import classNames from 'classnames';
 import { getSearchItem } from '../services/getSearchItem';
 import { SkeletonCardDetails } from './SkeletonCardDetails';
+import ThemeContext from '../context/themeContext';
 
 interface IDataItem {
   title: string;
@@ -13,6 +15,8 @@ interface IDataItem {
 }
 
 export function CardDetails() {
+  const theme = useContext(ThemeContext);
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [data, setData] = useState<IDataItem>();
@@ -45,7 +49,7 @@ export function CardDetails() {
   return (
     <div data-testid="card-details">
       {errorMessage && <p>{errorMessage}</p>}
-      <div className="card-details-container">
+      <div className={classNames('card-details-container', theme)}>
         {isLoading ? (
           <SkeletonCardDetails />
         ) : (
