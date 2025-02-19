@@ -115,3 +115,8 @@
   top: 10px;
   left: 10px;
 }
+
+.checkbox-container {
+  display: grid;
+  justify-content: start;
+}

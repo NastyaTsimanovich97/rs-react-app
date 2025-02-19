@@ -5,6 +5,7 @@ import { SkeletonCardList } from './SkeletonCardList';
 import { getSearchResult } from '../services/getSearchResult';
 import Pagination from './Pagination';
 import { getURLParams } from '../utils/getURLParams.util';
+import { useAppSelector } from '../app/hooks';
 
 interface IDataItem {
   id: string;
@@ -36,6 +37,8 @@ export function CardList(props: ICardListProps) {
   const [page, setPage] = useState<number | null>(initPage);
   const [nextPage, setNextPage] = useState<string | null>(null);
   const [prevPage, setPrevPage] = useState<string | null>(null);
+
+  const selectedCards = useAppSelector((state) => state.cards);
 
   useEffect(() => {
     const getData = () => {
@@ -96,6 +99,7 @@ export function CardList(props: ICardListProps) {
                 authors={item.authors.map((i) => i.name).join(';')}
                 description={item.summaries.join('.')}
                 onClick={onCardClick}
+                isChecked={!!selectedCards.find((i) => i.id === item.id)}
               />
             ))
           ) : (
