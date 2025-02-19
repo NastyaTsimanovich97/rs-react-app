@@ -10,20 +10,25 @@ export interface Card {
 const initialState: Card[] = [];
 
 const cardsSlice = createSlice({
-  name: 'cards',
+  name: 'selectedCards',
   initialState,
   reducers: {
-    cardAdded(state, action: PayloadAction<Card>) {
+    selectedCardAdded(state, action: PayloadAction<Card>) {
       state.push(action.payload);
     },
-    cardDeleted(state, action: PayloadAction<Card>) {
+    selectedCardDeleted(state, action: PayloadAction<Card>) {
       return state.filter((item) => item.id !== action.payload.id);
     },
-    allCardsDeleted() {
+    allSelectedCardsDeleted() {
       return initialState;
     },
   },
 });
 
-export const { cardAdded, cardDeleted, allCardsDeleted } = cardsSlice.actions;
+export const {
+  selectedCardAdded,
+  selectedCardDeleted,
+  allSelectedCardsDeleted,
+} = cardsSlice.actions;
+
 export default cardsSlice.reducer;

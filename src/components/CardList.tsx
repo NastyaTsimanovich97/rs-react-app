@@ -38,7 +38,7 @@ export function CardList(props: ICardListProps) {
   const [nextPage, setNextPage] = useState<string | null>(null);
   const [prevPage, setPrevPage] = useState<string | null>(null);
 
-  const selectedCards = useAppSelector((state) => state.cards);
+  const selectedCards = useAppSelector((state) => state.selectedCards);
 
   useEffect(() => {
     const getData = () => {

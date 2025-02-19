@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import classNames from 'classnames';
-import { cardAdded, cardDeleted } from '../app/cardsSlice';
+import { selectedCardAdded, selectedCardDeleted } from '../app/cardsSlice';
 import { useAppDispatch } from '../app/hooks';
 import { spliceDescription } from '../utils/spliceDescription.util';
 import { Checkbox } from './Checkbox';
@@ -26,7 +26,7 @@ export function Card(props: ICardProps) {
   ) => {
     event.stopPropagation();
 
-    const action = isChecked ? cardDeleted : cardAdded;
+    const action = isChecked ? selectedCardDeleted : selectedCardAdded;
     dispatch(
       action({
         id: props.id,

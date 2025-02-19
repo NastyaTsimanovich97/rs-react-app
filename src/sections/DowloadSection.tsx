@@ -1,12 +1,12 @@
 import { saveAs } from 'file-saver';
 
-import { allCardsDeleted } from '../app/cardsSlice';
+import { allSelectedCardsDeleted } from '../app/cardsSlice';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { Button } from '../components/Button';
 
 export function DownloadSection() {
   const dispatch = useAppDispatch();
-  const selectedCards = useAppSelector((state) => state.cards);
+  const selectedCards = useAppSelector((state) => state.selectedCards);
   const selectedCardsLength = selectedCards.length;
 
   const text =
@@ -15,7 +15,7 @@ export function DownloadSection() {
       : `${selectedCardsLength} item is selected`;
 
   const handleUnselect = () => {
-    dispatch(allCardsDeleted());
+    dispatch(allSelectedCardsDeleted());
   };
 
   const handleDowloadCSV = () => {
