@@ -1,31 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router';
 import { Card } from './Card';
 import { SkeletonCardList } from './SkeletonCardList';
-import { getSearchResult } from '../services/getSearchResult';
 import Pagination from './Pagination';
 import { getURLParams } from '../utils/getURLParams.util';
 import { useAppSelector } from '../app/hooks';
-
-interface IDataItem {
-  id: string;
-  title: string;
-  authors: { name: string }[];
-  summaries: string[];
-  bookshelves: string[];
-  languages: string[];
-  subjects: string[];
-}
+import { useGetSearchResultQuery } from '../services/getSearchResult';
+import { Error } from './Error';
 
 interface ICardListProps {
   searchValue: string;
 }
 
 export function CardList(props: ICardListProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [data, setData] = useState<IDataItem[]>([]);
-
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,34 +22,18 @@ export function CardList(props: ICardListProps) {
     : 1;
 
   const [page, setPage] = useState<number | null>(initPage);
-  const [nextPage, setNextPage] = useState<string | null>(null);
-  const [prevPage, setPrevPage] = useState<string | null>(null);
 
   const selectedCards = useAppSelector((state) => state.selectedCards);
 
-  useEffect(() => {
-    const getData = () => {
-      setIsLoading(true);
-      setErrorMessage('');
+  const { data, isFetching, isLoading, error } = useGetSearchResultQuery({
+    page,
+    searchValue: props.searchValue,
+  });
 
-      getSearchResult(props.searchValue, page)
-        .then((data) => {
-          setData(data.results);
-
-          const next = data.next ? getURLParams(data.next, 'page') : null;
-          setNextPage(next);
-
-          const prev = data.previous
-            ? getURLParams(data.previous, 'page')
-            : null;
-          setPrevPage(data.previous && !prev ? '1' : prev);
-        })
-        .catch((error) => setErrorMessage(error.message))
-        .finally(() => setIsLoading(false));
-    };
-
-    getData();
-  }, [props.searchValue, page]);
+  const results = data?.results;
+  const nextPage = data?.next ? getURLParams(data?.next, 'page') : null;
+  const prev = data?.previous ? getURLParams(data?.previous, 'page') : null;
+  const prevPage = data?.previous && !prev ? '1' : prev;
 
   const onPageChange = (page: string | null) => {
     setPage(page ? Number(page) : null);
@@ -76,22 +47,25 @@ export function CardList(props: ICardListProps) {
     navigate(`details/${id}${location.search}`);
   };
 
+  if (error) {
+    return <Error error={error} />;
+  }
+
   return (
     <>
-      {errorMessage && <p>{errorMessage}</p>}
       <Pagination
         page={page}
         nextPage={nextPage}
         prevPage={prevPage}
         onPageChange={onPageChange}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
       />
-      {isLoading ? (
+      {isLoading || isFetching ? (
         <SkeletonCardList />
       ) : (
         <div className="card-container" data-testid="card-list">
-          {data.length ? (
-            data.map((item) => (
+          {results?.length ? (
+            results.map((item) => (
               <Card
                 key={item.id}
                 id={item.id}

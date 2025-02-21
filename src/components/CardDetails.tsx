@@ -1,46 +1,21 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import classNames from 'classnames';
-import { getSearchItem } from '../services/getSearchItem';
 import { SkeletonCardDetails } from './SkeletonCardDetails';
 import ThemeContext from '../context/themeContext';
-
-interface IDataItem {
-  title: string;
-  authors: { name: string }[];
-  summaries: string[];
-  bookshelves: string[];
-  languages: string[];
-  subjects: string[];
-}
+import { useGetSearchItemQuery } from '../services/getSearchResult';
+import { Error } from './Error';
 
 export function CardDetails() {
   const theme = useContext(ThemeContext);
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [data, setData] = useState<IDataItem>();
 
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
 
-  useEffect(() => {
-    const getData = () => {
-      if (params.id) {
-        setIsLoading(true);
-
-        getSearchItem(params.id)
-          .then((data) => {
-            setData(data);
-          })
-          .catch((error) => setErrorMessage(error.message))
-          .finally(() => setIsLoading(false));
-      }
-    };
-
-    getData();
-  }, [params.id]);
+  const { data, isFetching, isLoading, error } = useGetSearchItemQuery({
+    id: params.id,
+  });
 
   const handleClose = () => {
     navigate(`/${location.search}`);
@@ -48,9 +23,9 @@ export function CardDetails() {
 
   return (
     <div data-testid="card-details">
-      {errorMessage && <p>{errorMessage}</p>}
+      {error && <Error error={error} />}
       <div className={classNames('card-details-container', theme)}>
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <SkeletonCardDetails />
         ) : (
           <div>
