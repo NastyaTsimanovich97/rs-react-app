@@ -19,6 +19,7 @@ const createRequest = (url: string) => ({ url, headers: searchAPIHeader });
 export const searchAPI = createApi({
   reducerPath: 'cards',
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
+  keepUnusedDataFor: 120,
   endpoints: (builder) => ({
     getSearchResult: builder.query<
       {
