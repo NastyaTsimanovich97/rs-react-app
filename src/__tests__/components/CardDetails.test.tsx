@@ -1,26 +1,13 @@
 import { vi } from 'vitest';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import * as reactRouterApi from 'react-router';
-import * as services from '../../services/getSearchItem';
+import { delay, http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
 import { CardDetails } from '../../components/CardDetails';
-
-const getSearchItemSpy = vi.spyOn(services, 'getSearchItem');
-
-vi.mock('react-router', () => ({
-  useSearchParams: () => [
-    {
-      get: () => vi.fn(),
-      set: () => vi.fn(),
-    },
-  ],
-  useNavigate: () => vi.fn(),
-  useLocation: () => vi.fn(),
-  useParams: vi.fn().mockReturnValue({ id: '1' }),
-}));
-
-const useNavigateSpy = vi.spyOn(reactRouterApi, 'useNavigate');
+import { renderWithProviders } from '../store';
+import * as services from '../../services/getSearchResult';
 
 const mockCardListData = {
   results: [
@@ -38,16 +25,43 @@ const mockCardListData = {
   previous: null,
 };
 
+vi.mock('react-router', () => ({
+  useSearchParams: () => [
+    {
+      get: () => vi.fn(),
+      set: () => vi.fn(),
+    },
+  ],
+  useNavigate: () => vi.fn(),
+  useLocation: () => vi.fn(),
+  useParams: vi.fn().mockReturnValue({ id: '1' }),
+}));
+
+const useNavigateSpy = vi.spyOn(reactRouterApi, 'useNavigate');
+
 describe('CardDetails Component', () => {
+  const handlers = [
+    http.get('https://gutendex.com/books/1', async () => {
+      await delay(150);
+      return HttpResponse.json(mockCardListData.results[0]);
+    }),
+  ];
+
+  const server = setupServer(...handlers);
+
+  beforeAll(() => server.listen());
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders the CardDetails with the Loading state', async () => {
-    getSearchItemSpy.mockImplementation(() => new Promise(() => {}));
+  afterEach(() => server.resetHandlers());
 
+  afterAll(() => server.close());
+
+  it('renders the CardDetails with the Loading state', async () => {
     await waitFor(() =>
-      render(
+      renderWithProviders(
         <MemoryRouter>
           <CardDetails />
         </MemoryRouter>
@@ -58,52 +72,52 @@ describe('CardDetails Component', () => {
   });
 
   it('renders the CardDetails with the correct data', async () => {
-    getSearchItemSpy.mockResolvedValue(mockCardListData.results[0]);
-
-    await act(async () =>
-      render(
-        <MemoryRouter>
-          <CardDetails />
-        </MemoryRouter>
-      )
+    renderWithProviders(
+      <MemoryRouter>
+        <CardDetails />
+      </MemoryRouter>
     );
 
     expect(
-      screen.getByText(mockCardListData.results[0].title)
+      await screen.findByText(mockCardListData.results[0].title)
     ).toBeInTheDocument();
   });
 
   it('renders the CardDetails with the correct data and click Close btn', async () => {
-    getSearchItemSpy.mockResolvedValue(mockCardListData.results[0]);
-
     const handleUseNavigationSpy = vi.fn();
     useNavigateSpy.mockImplementation(() => handleUseNavigationSpy);
 
-    await act(async () =>
-      render(
-        <MemoryRouter>
-          <CardDetails />
-        </MemoryRouter>
-      )
+    renderWithProviders(
+      <MemoryRouter>
+        <CardDetails />
+      </MemoryRouter>
     );
 
-    await userEvent.click(screen.getByTestId('close-btn'));
+    await userEvent.click(await screen.findByTestId('close-btn'));
 
     expect(handleUseNavigationSpy).toHaveBeenCalledTimes(1);
   });
+});
+
+describe('CardDetails Component Errors', () => {
+  const errorMessage = 'Failed to fetch data';
+
+  const getSearchResultSpy = vi.spyOn(services, 'useGetSearchItemQuery');
 
   it('renders the CardDetails with Error message', async () => {
-    const errorMessage = 'Failed to fetch data';
-    getSearchItemSpy.mockRejectedValue(new Error(errorMessage));
+    getSearchResultSpy.mockImplementationOnce(() => ({
+      data: null,
+      error: { message: errorMessage },
+      isLoading: false,
+      refetch: vi.fn(),
+    }));
 
-    await act(async () =>
-      render(
-        <MemoryRouter>
-          <CardDetails />
-        </MemoryRouter>
-      )
+    renderWithProviders(
+      <MemoryRouter>
+        <CardDetails />
+      </MemoryRouter>
     );
 
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    expect(await screen.findByText(errorMessage)).toBeInTheDocument();
   });
 });

@@ -1,16 +1,27 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import cardsReducer from './cardsSlice';
 import { searchAPI } from '../services/getSearchResult';
 
-export const store = configureStore({
-  reducer: {
-    selectedCards: cardsReducer,
-    [searchAPI.reducerPath]: searchAPI.reducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(searchAPI.middleware),
+const rootReducer = combineReducers({
+  selectedCards: cardsReducer,
+  [searchAPI.reducerPath]: searchAPI.reducer,
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-export type AppStore = typeof store;
+// export const store = configureStore({
+//   reducer: rootReducer,
+//   middleware: (getDefaultMiddleware) =>
+//     getDefaultMiddleware().concat(searchAPI.middleware),
+// });
+
+export function setupStore(preloadedState?: Partial<RootState>) {
+  return configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(searchAPI.middleware),
+    preloadedState,
+  });
+}
+
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = AppStore['dispatch'];
+export type AppStore = ReturnType<typeof setupStore>;
