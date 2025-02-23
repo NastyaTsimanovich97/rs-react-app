@@ -1,12 +1,13 @@
 import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
-import { render, cleanup, act, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import SearchPage from '../../pages/SearchPage';
 import * as useLocalStorageHooks from '../../hooks/useLocalStorage';
 import * as services from '../../services/getSearchResult';
+import { renderWithProviders } from '../store';
 
 const useLocalStorageSpy = vi.spyOn(useLocalStorageHooks, 'useLocalStorage');
-const getSearchResultSpy = vi.spyOn(services, 'getSearchResult');
+const getSearchResultSpy = vi.spyOn(services, 'useGetSearchResultQuery');
 
 vi.mock('react-router', () => ({
   useSearchParams: () => [
@@ -53,17 +54,20 @@ describe('SearchPage page', () => {
 
   it('renders the SearchPage with the correct data', async () => {
     useLocalStorageSpy.mockReturnValue(['Test Search Value', () => {}]);
-    getSearchResultSpy.mockResolvedValue(mockCardListData);
+    getSearchResultSpy.mockImplementationOnce(() => ({
+      data: mockCardListData,
+      error: null,
+      isLoading: false,
+      refetch: vi.fn(),
+    }));
 
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <SearchPage />
-        </MemoryRouter>
-      );
-    });
+    renderWithProviders(
+      <MemoryRouter>
+        <SearchPage />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByTestId('card-list')).toBeInTheDocument();
-    expect(screen.getAllByTestId('card-item')).toHaveLength(2);
+    expect(await screen.findByTestId('card-list')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('card-item')).toHaveLength(2);
   });
 });

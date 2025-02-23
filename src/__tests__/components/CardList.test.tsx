@@ -1,13 +1,15 @@
 import { vi } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { CardList } from '../../components/CardList';
 import * as services from '../../services/getSearchResult';
-
-const getSearchResultSpy = vi.spyOn(services, 'getSearchResult');
+import { renderWithProviders } from '../store';
+import { delay, http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
 
 const mockSetSearchParams = vi.fn();
 const mockGetSearchParams = vi.fn();
+
 vi.mock('react-router', () => ({
   useSearchParams: () => [
     {
@@ -45,31 +47,50 @@ const mockCardListData = {
 };
 
 describe('CardList Component', () => {
+  const handlers = [
+    http.get('https://gutendex.com/books', async () => {
+      await delay(150);
+      return HttpResponse.json(mockCardListData);
+    }),
+  ];
+
+  const server = setupServer(...handlers);
+
+  beforeAll(() => server.listen());
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => server.resetHandlers());
+
+  afterAll(() => server.close());
+
   it('renders the CardList with the correct data', async () => {
-    getSearchResultSpy.mockResolvedValue(mockCardListData);
+    renderWithProviders(
+      <MemoryRouter>
+        <CardList searchValue="test" />
+      </MemoryRouter>
+    );
 
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <CardList searchValue="test" />
-        </MemoryRouter>
-      );
-    });
-
-    expect(screen.getByTestId('card-list')).toBeInTheDocument();
-    expect(screen.getAllByTestId('card-item')).toHaveLength(2);
+    expect(await screen.findByTestId('card-list')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('card-item')).toHaveLength(2);
   });
 
   it('renders the CardList with no Result message', async () => {
-    getSearchResultSpy.mockResolvedValue({ ...mockCardListData, results: [] });
+    const getSearchResultSpy = vi.spyOn(services, 'useGetSearchResultQuery');
+    getSearchResultSpy.mockImplementationOnce(() => ({
+      data: { ...mockCardListData, results: [] },
+      error: null,
+      isLoading: false,
+      refetch: vi.fn(),
+    }));
 
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <CardList searchValue="test" />
-        </MemoryRouter>
-      );
-    });
+    renderWithProviders(
+      <MemoryRouter>
+        <CardList searchValue="test" />
+      </MemoryRouter>
+    );
 
     expect(
       screen.getByText('Results are not found. Please, try with another query')
