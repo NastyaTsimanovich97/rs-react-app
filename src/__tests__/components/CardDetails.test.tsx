@@ -120,4 +120,21 @@ describe('CardDetails Component Errors', () => {
 
     expect(await screen.findByText(errorMessage)).toBeInTheDocument();
   });
+
+  it('renders the CardDetails with Error message from error object', async () => {
+    getSearchResultSpy.mockImplementationOnce(() => ({
+      data: null,
+      error: { status: 500, error: errorMessage },
+      isLoading: false,
+      refetch: vi.fn(),
+    }));
+
+    renderWithProviders(
+      <MemoryRouter>
+        <CardDetails />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(errorMessage)).toBeInTheDocument();
+  });
 });

@@ -7,12 +7,6 @@ const rootReducer = combineReducers({
   [searchAPI.reducerPath]: searchAPI.reducer,
 });
 
-// export const store = configureStore({
-//   reducer: rootReducer,
-//   middleware: (getDefaultMiddleware) =>
-//     getDefaultMiddleware().concat(searchAPI.middleware),
-// });
-
 export function setupStore(preloadedState?: Partial<RootState>) {
   return configureStore({
     reducer: rootReducer,

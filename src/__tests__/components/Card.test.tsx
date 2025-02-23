@@ -3,6 +3,10 @@ import { screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Card } from '../../components/Card';
 import { renderWithProviders } from '../store';
+import * as cardsSlice from '../../app/cardsSlice';
+
+const selectedCardDeletedSpy = vi.spyOn(cardsSlice, 'selectedCardDeleted');
+const selectedCardAddedSpy = vi.spyOn(cardsSlice, 'selectedCardAdded');
 
 const mockCardData = {
   id: '1',
@@ -77,5 +81,41 @@ describe('Card Component', () => {
     await userEvent.click(screen.getByText(mockCardData.name));
 
     expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls the onChange handler when checked true', async () => {
+    const handleClick = vi.fn();
+    renderWithProviders(
+      <Card
+        id={mockCardData.id}
+        name={mockCardData.name}
+        authors={mockCardData.authors}
+        description={mockCardData.description}
+        onClick={handleClick}
+        isChecked={true}
+      />
+    );
+
+    await userEvent.click(screen.getByRole('checkbox'));
+
+    expect(selectedCardDeletedSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls the onChange handler when checked false', async () => {
+    const handleClick = vi.fn();
+    renderWithProviders(
+      <Card
+        id={mockCardData.id}
+        name={mockCardData.name}
+        authors={mockCardData.authors}
+        description={mockCardData.description}
+        onClick={handleClick}
+        isChecked={false}
+      />
+    );
+
+    await userEvent.click(screen.getByRole('checkbox'));
+
+    expect(selectedCardAddedSpy).toHaveBeenCalledTimes(1);
   });
 });

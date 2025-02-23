@@ -4,7 +4,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import ErrorButton from '../components/ErrorButton';
 import { HeaderSection } from '../sections/HeaderSection';
 import { MainSection } from '../sections/MainSection';
-import { DownloadSection } from '../sections/DowloadSection';
+import { DownloadSection } from '../sections/DownloadSection';
 import ThemeContext from '../context/themeContext';
 
 function SearchPage() {
