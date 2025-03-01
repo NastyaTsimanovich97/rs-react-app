@@ -4,7 +4,7 @@ import { Card } from './Card';
 import { SkeletonCardList } from './SkeletonCardList';
 import Pagination from './Pagination';
 import { getURLParams } from '../utils/getURLParams.util';
-import { useAppSelector } from '../app/hooks';
+import { useAppSelector } from '../app/store/hooks';
 import { useGetSearchResultQuery } from '../services/getSearchResult';
 import { Error } from './Error';
 

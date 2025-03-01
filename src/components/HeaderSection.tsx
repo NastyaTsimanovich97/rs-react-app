@@ -1,4 +1,4 @@
-import { SearchBar } from '../components/SearchBar';
+import { SearchBar } from './SearchBar';
 
 interface IHeaderSectionProps {
   onUpdateSearch: (value: string) => void;

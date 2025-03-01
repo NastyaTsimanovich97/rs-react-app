@@ -1,7 +1,8 @@
 import { vi } from 'vitest';
+import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { cleanup, screen } from '@testing-library/react';
-import SearchPage from '../../pages/SearchPage';
+import SearchPage from '../../pages-old/SearchPage';
 import * as useLocalStorageHooks from '../../hooks/useLocalStorage';
 import * as services from '../../services/getSearchResult';
 import { renderWithProviders } from '../store';

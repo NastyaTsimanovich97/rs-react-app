@@ -1,3 +1,4 @@
+import React from 'react';
 import { vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';

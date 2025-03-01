@@ -1,3 +1,4 @@
+import React from 'react';
 import { vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import Pagination from '../../components/Pagination';

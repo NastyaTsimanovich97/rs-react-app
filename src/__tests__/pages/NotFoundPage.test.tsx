@@ -1,5 +1,6 @@
+import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
-import NotFoundPage from '../../pages/NotFoundPage';
+import NotFoundPage from '../../pages-old/NotFoundPage';
 
 afterEach(() => {
   cleanup();

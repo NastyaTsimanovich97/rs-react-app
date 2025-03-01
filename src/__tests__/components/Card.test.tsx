@@ -1,9 +1,10 @@
+import React from 'react';
 import { vi } from 'vitest';
 import { screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Card } from '../../components/Card';
 import { renderWithProviders } from '../store';
-import * as cardsSlice from '../../app/cardsSlice';
+import * as cardsSlice from '../../app/store/cardsSlice';
 
 const selectedCardDeletedSpy = vi.spyOn(cardsSlice, 'selectedCardDeleted');
 const selectedCardAddedSpy = vi.spyOn(cardsSlice, 'selectedCardAdded');

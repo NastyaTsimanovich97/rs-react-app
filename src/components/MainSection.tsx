@@ -1,4 +1,4 @@
-import { CardList } from '../components/CardList';
+import { CardList } from './CardList';
 
 interface IMainSectionProps {
   searchValue: string;

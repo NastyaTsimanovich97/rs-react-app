@@ -2,9 +2,9 @@ import { useContext } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import ErrorButton from '../components/ErrorButton';
-import { HeaderSection } from '../sections/HeaderSection';
-import { MainSection } from '../sections/MainSection';
-import { DownloadSection } from '../sections/DownloadSection';
+import { HeaderSection } from '../components/HeaderSection';
+import { MainSection } from '../components/MainSection';
+import { DownloadSection } from '../components/DownloadSection';
 import ThemeContext from '../context/themeContext';
 
 function SearchPage() {
