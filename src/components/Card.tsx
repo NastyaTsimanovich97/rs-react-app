@@ -1,34 +1,60 @@
-import { PureComponent } from 'react';
+import { useContext } from 'react';
+import classNames from 'classnames';
+import { selectedCardAdded, selectedCardDeleted } from '../app/cardsSlice';
+import { useAppDispatch } from '../app/hooks';
+import { spliceDescription } from '../utils/spliceDescription.util';
+import { Checkbox } from './Checkbox';
+import ThemeContext from '../context/themeContext';
 
-interface ICard {
+interface ICardProps {
+  id: string;
+  onClick: (id: string) => void;
+  isChecked: boolean;
   name?: string;
   authors?: string;
   description?: string;
 }
 
-export class Card extends PureComponent<ICard, ICard> {
-  constructor(props: ICard) {
-    super(props);
-    this.state = {
-      name: this.props.name || 'Card Name',
-      authors: this.props.authors || 'Card Authors',
-      description: this.props.description || 'Card Description',
-    };
-  }
+export function Card(props: ICardProps) {
+  const dispatch = useAppDispatch();
 
-  render() {
-    return (
-      <div className="card-item">
-        <h2>{this.state.name}</h2>
+  const theme = useContext(ThemeContext);
+
+  const handleCheck = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    isChecked: boolean
+  ) => {
+    event.stopPropagation();
+
+    const action = isChecked ? selectedCardDeleted : selectedCardAdded;
+    dispatch(
+      action({
+        id: props.id,
+        name: props.name,
+        description: props.description,
+        authors: props.authors,
+      })
+    );
+  };
+
+  return (
+    <div
+      data-testid="card-item"
+      className={classNames('card-item', theme)}
+      onClick={() => props.onClick(props.id)}
+    >
+      <Checkbox isChecked={props.isChecked} handleChange={handleCheck} />
+      <div>
+        <h2>{props.name || 'Card Name'}</h2>
         <p>
           <b>Authors: </b>
-          {this.state.authors}
+          {props.authors || 'Card Authors'}
         </p>
         <p>
           <b>Summary: </b>
-          {this.state.description}
+          {spliceDescription(props.description || 'Card Description')}
         </p>
       </div>
-    );
-  }
+    </div>
+  );
 }

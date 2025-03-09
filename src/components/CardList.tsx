@@ -1,73 +1,86 @@
-import { Component } from 'react';
+import { useState } from 'react';
+import { useSearchParams, useNavigate, useLocation } from 'react-router';
 import { Card } from './Card';
 import { SkeletonCardList } from './SkeletonCardList';
-import { getSearchResult } from '../service/getSearchResult';
-
-interface IDataItem {
-  id: string;
-  title: string;
-  authors: { name: string }[];
-  summaries: string[];
-}
+import Pagination from './Pagination';
+import { getURLParams } from '../utils/getURLParams.util';
+import { useAppSelector } from '../app/hooks';
+import { useGetSearchResultQuery } from '../services/getSearchResult';
+import { Error } from './Error';
 
 interface ICardListProps {
   searchValue: string;
 }
 
-interface ICardListState {
-  isLoading: boolean;
-  data: IDataItem[];
-  errorMessage?: string;
-}
+export function CardList(props: ICardListProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-export class CardList extends Component<ICardListProps, ICardListState> {
-  constructor(props: ICardListProps) {
-    super(props);
-    this.state = { isLoading: false, data: [] };
+  const initPage = searchParams.get('page')
+    ? Number(searchParams.get('page'))
+    : 1;
 
-    this.getData = this.getData.bind(this);
-  }
+  const [page, setPage] = useState<number | null>(initPage);
 
-  componentDidMount(): void {
-    this.getData();
-  }
+  const selectedCards = useAppSelector((state) => state.selectedCards);
 
-  componentDidUpdate(prevProps: Readonly<ICardListProps>): void {
-    if (prevProps.searchValue !== this.props.searchValue) {
-      this.getData();
+  const { data, isFetching, isLoading, error } = useGetSearchResultQuery({
+    page,
+    searchValue: props.searchValue,
+  });
+
+  const results = data?.results;
+  const nextPage = data?.next ? getURLParams(data?.next, 'page') : null;
+  const prev = data?.previous ? getURLParams(data?.previous, 'page') : null;
+  const prevPage = data?.previous && !prev ? '1' : prev;
+
+  const onPageChange = (page: string | null) => {
+    setPage(page ? Number(page) : null);
+    if (page) {
+      searchParams.set('page', page);
+      setSearchParams(searchParams);
     }
+  };
+
+  const onCardClick = (id: string) => {
+    navigate(`details/${id}${location.search}`);
+  };
+
+  if (error) {
+    return <Error error={error} />;
   }
 
-  getData() {
-    this.setState({ isLoading: true, errorMessage: '' });
-
-    getSearchResult(this.props.searchValue)
-      .then((data) => this.setState({ data: data.results }))
-      .catch((error) => this.setState({ errorMessage: error.message }))
-      .finally(() => this.setState({ isLoading: false }));
-  }
-
-  render() {
-    const { data } = this.state;
-
-    return (
-      <>
-        {this.state.errorMessage && <p>{this.state.errorMessage}</p>}
-        {this.state.isLoading ? (
-          <SkeletonCardList />
-        ) : (
-          <div className="card-container">
-            {data.map((item) => (
+  return (
+    <>
+      <Pagination
+        page={page}
+        nextPage={nextPage}
+        prevPage={prevPage}
+        onPageChange={onPageChange}
+        isLoading={isLoading || isFetching}
+      />
+      {isLoading || isFetching ? (
+        <SkeletonCardList />
+      ) : (
+        <div className="card-container" data-testid="card-list">
+          {results?.length ? (
+            results.map((item) => (
               <Card
                 key={item.id}
+                id={item.id}
                 name={item.title}
                 authors={item.authors.map((i) => i.name).join(';')}
                 description={item.summaries.join('.')}
+                onClick={onCardClick}
+                isChecked={!!selectedCards.find((i) => i.id === item.id)}
               />
-            ))}
-          </div>
-        )}
-      </>
-    );
-  }
+            ))
+          ) : (
+            <p>Results are not found. Please, try with another query</p>
+          )}
+        </div>
+      )}
+    </>
+  );
 }
