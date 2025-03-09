@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, ReactNode, StrictMode } from 'react';
+import React, { useState, ReactNode, StrictMode } from 'react';
 import { Provider } from 'react-redux';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import ThemeContext from '@/context/themeContext';
-import { ThemeRadioButton } from '@/components/ThemeRadioButton';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import ThemeContext from '../context/themeContext';
+import { ThemeRadioButton } from '../components/ThemeRadioButton';
 import { setupStore } from './store/store';
 import '../index.css';
 import '../App.css';

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card } from './Card';
 import { SkeletonCardList } from './SkeletonCardList';
 import Pagination from './Pagination';

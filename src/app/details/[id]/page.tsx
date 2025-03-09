@@ -1,11 +1,11 @@
 'use client';
-import { Usable } from 'react';
+import React from 'react';
 import CardDetails from '../../../components/CardDetails';
 
 export default function CardDetailsPage({
   params,
 }: {
-  params: Usable<{ id: string }>;
+  params: { id: string };
 }) {
   return <CardDetails params={params} />;
 }

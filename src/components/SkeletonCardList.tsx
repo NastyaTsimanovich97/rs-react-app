@@ -1,3 +1,4 @@
+import React from 'react';
 import { SkeletonCard } from './SkeletonCard';
 
 export function SkeletonCardList() {

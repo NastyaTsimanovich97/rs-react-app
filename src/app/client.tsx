@@ -3,8 +3,10 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 
-const App = dynamic(() => import('../App'), { ssr: false });
+const SearchPage = dynamic(() => import('../pages-old/SearchPage'), {
+  ssr: false,
+});
 
 export default function ClientOnly() {
-  return <App />;
+  return <SearchPage />;
 }

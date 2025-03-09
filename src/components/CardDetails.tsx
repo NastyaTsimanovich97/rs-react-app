@@ -1,4 +1,4 @@
-import React, { Usable, useContext } from 'react';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SkeletonCardDetails } from './SkeletonCardDetails';
@@ -7,12 +7,12 @@ import { useGetSearchItemQuery } from '../services/getSearchResult';
 import { Error } from './Error';
 
 interface CardDetailsProps {
-  params: Usable<{ id: string }>;
+  params: { id: string };
 }
 
 export default function CardDetails({ params }: CardDetailsProps) {
   const theme = useContext(ThemeContext);
-  const id = React.use(params).id;
+  const id = params.id;
 
   const searchParams = useSearchParams();
   const router = useRouter();

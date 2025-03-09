@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import ErrorButton from '../components/ErrorButton';

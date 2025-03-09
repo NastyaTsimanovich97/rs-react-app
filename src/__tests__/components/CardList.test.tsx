@@ -1,7 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
 import { screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { CardList } from '../../components/CardList';
 import * as services from '../../services/getSearchResult';
 import { renderWithProviders } from '../store';
@@ -11,15 +10,17 @@ import { setupServer } from 'msw/node';
 const mockSetSearchParams = vi.fn();
 const mockGetSearchParams = vi.fn();
 
-vi.mock('react-router', () => ({
-  useSearchParams: () => [
-    {
-      get: mockGetSearchParams,
-      set: mockSetSearchParams,
-    },
-  ],
-  useNavigate: () => vi.fn(),
-  useLocation: () => vi.fn(),
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: mockGetSearchParams,
+    set: mockSetSearchParams,
+  }),
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    pathname: '/search',
+  }),
+  usePathname: () => '/search',
 }));
 
 const mockCardListData = {
@@ -68,11 +69,7 @@ describe('CardList Component', () => {
   afterAll(() => server.close());
 
   it('renders the CardList with the correct data', async () => {
-    renderWithProviders(
-      <MemoryRouter>
-        <CardList searchValue="test" />
-      </MemoryRouter>
-    );
+    renderWithProviders(<CardList searchValue="test" />);
 
     expect(await screen.findByTestId('card-list')).toBeInTheDocument();
     expect(await screen.findAllByTestId('card-item')).toHaveLength(2);
@@ -87,11 +84,7 @@ describe('CardList Component', () => {
       refetch: vi.fn(),
     }));
 
-    renderWithProviders(
-      <MemoryRouter>
-        <CardList searchValue="test" />
-      </MemoryRouter>
-    );
+    renderWithProviders(<CardList searchValue="test" />);
 
     expect(
       screen.getByText('Results are not found. Please, try with another query')

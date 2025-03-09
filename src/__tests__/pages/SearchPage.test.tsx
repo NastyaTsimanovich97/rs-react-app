@@ -1,6 +1,5 @@
 import { vi } from 'vitest';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { cleanup, screen } from '@testing-library/react';
 import SearchPage from '../../pages-old/SearchPage';
 import * as useLocalStorageHooks from '../../hooks/useLocalStorage';
@@ -10,17 +9,17 @@ import { renderWithProviders } from '../store';
 const useLocalStorageSpy = vi.spyOn(useLocalStorageHooks, 'useLocalStorage');
 const getSearchResultSpy = vi.spyOn(services, 'useGetSearchResultQuery');
 
-vi.mock('react-router', () => ({
-  useSearchParams: () => [
-    {
-      get: vi.fn().mockReturnValue(undefined),
-      set: () => vi.fn(),
-    },
-  ],
-  useNavigate: () => vi.fn(),
-  useLocation: () => vi.fn(),
-  useParams: vi.fn().mockReturnValue({ id: '1' }),
-  Outlet: () => <div data-testid="mock-outlet">Outlet Content</div>,
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: vi.fn().mockReturnValue(undefined),
+    set: vi.fn(),
+  }),
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    pathname: '/search',
+  }),
+  usePathname: () => '/search',
 }));
 
 const mockCardListData = {
@@ -62,11 +61,7 @@ describe('SearchPage page', () => {
       refetch: vi.fn(),
     }));
 
-    renderWithProviders(
-      <MemoryRouter>
-        <SearchPage />
-      </MemoryRouter>
-    );
+    renderWithProviders(<SearchPage />);
 
     expect(await screen.findByTestId('card-list')).toBeInTheDocument();
     expect(await screen.findAllByTestId('card-item')).toHaveLength(2);
