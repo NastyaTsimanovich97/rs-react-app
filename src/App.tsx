@@ -1,36 +1,23 @@
-import { Component } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import './App.css';
-import { MainSeaction } from './sections/MainSection';
-import { HeaderSection } from './sections/HeaderSection';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import ErrorButton from './components/ErrorButton';
+import SearchPage from './pages/SearchPage';
+import NotFoundPage from './pages/NotFoundPage';
+import { CardDetails } from './components/CardDetails';
 
-interface IAppState {
-  searchValue: string;
-}
-
-export class App extends Component<object, IAppState> {
-  constructor(props: object) {
-    super(props);
-
-    this.state = { searchValue: localStorage.getItem('searchValue') || '' };
-
-    this.onUpdateSearch = this.onUpdateSearch.bind(this);
-  }
-
-  onUpdateSearch(searchValue: string) {
-    this.setState({ searchValue: searchValue || '' });
-  }
-
-  render() {
-    return (
-      <ErrorBoundary>
-        <HeaderSection onUpdateSearch={this.onUpdateSearch} />
-        <MainSeaction searchValue={this.state.searchValue} />
-        <ErrorButton />
-      </ErrorBoundary>
-    );
-  }
+export function App() {
+  return (
+    <ErrorBoundary>
+      <Router>
+        <Routes>
+          <Route path="/" element={<SearchPage />}>
+            <Route path="/details/:id" element={<CardDetails />} />
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Router>
+    </ErrorBoundary>
+  );
 }
 
 export default App;

@@ -1,8 +1,15 @@
-const BASE_URL = 'https://gutendex.com/books?page=1';
+const BASE_URL = 'https://gutendex.com/books';
 
-export const getSearchResult = async (searchValue: string) => {
+export const getSearchResult = async (
+  searchValue: string,
+  page: number | null
+) => {
   try {
-    const URL = searchValue ? `${BASE_URL}&search=${searchValue}` : BASE_URL;
+    let URL = `${BASE_URL}?page=${page || 1}`;
+    if (searchValue) {
+      URL = URL + `&search=${searchValue}`;
+    }
+
     const response = await fetch(URL);
 
     if (response.ok) {
