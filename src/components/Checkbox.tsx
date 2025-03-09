@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface ICheckboxProps {
   isChecked: boolean;
   handleChange: (

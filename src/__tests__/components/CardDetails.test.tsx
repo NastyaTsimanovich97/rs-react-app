@@ -1,140 +1,133 @@
+import React from 'react';
 import { vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
-import * as reactRouterApi from 'react-router';
-import { delay, http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
-import { CardDetails } from '../../components/CardDetails';
-import { renderWithProviders } from '../store';
-import * as services from '../../services/getSearchResult';
+import * as routerApi from 'next/navigation';
+import CardDetails from '../../components/CardDetails';
+import { useGetSearchItemQuery } from '../../services/getSearchResult';
+import ThemeContext from '../../context/themeContext';
 
-const mockCardListData = {
-  results: [
-    {
-      id: '1',
-      title: 'Title 1',
-      authors: [{ name: 'Author 1' }],
-      summaries: ['Summary 1'],
-      bookshelves: ['Summary 1'],
-      languages: ['en'],
-      subjects: ['Summary 1'],
-    },
-  ],
-  next: null,
-  previous: null,
-};
-
-vi.mock('react-router', () => ({
-  useSearchParams: () => [
-    {
-      get: () => vi.fn(),
-      set: () => vi.fn(),
-    },
-  ],
-  useNavigate: () => vi.fn(),
-  useLocation: () => vi.fn(),
-  useParams: vi.fn().mockReturnValue({ id: '1' }),
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    back: vi.fn(),
+  }),
+  useSearchParams: () => ({
+    get: vi.fn(),
+    toString: () => '',
+  }),
 }));
 
-const useNavigateSpy = vi.spyOn(reactRouterApi, 'useNavigate');
+vi.mock('../../services/getSearchResult', () => ({
+  useGetSearchItemQuery: vi.fn(),
+}));
+
+const mockThemeContext = {
+  theme: 'light',
+  toggleTheme: vi.fn(),
+};
+
+const mockData = {
+  id: '1',
+  title: 'Test Title',
+  authors: [{ name: 'Author 1' }],
+  summaries: ['Summary 1'],
+  bookshelves: ['Bookshelf 1'],
+  languages: ['en'],
+  subjects: ['Subject 1'],
+};
+
+const mockError = {
+  message: 'Failed to fetch data',
+};
 
 describe('CardDetails Component', () => {
-  const handlers = [
-    http.get('https://gutendex.com/books/1', async () => {
-      await delay(150);
-      return HttpResponse.json(mockCardListData.results[0]);
-    }),
-  ];
+  it('renders the SkeletonCardDetails when loading', async () => {
+    vi.mocked(useGetSearchItemQuery).mockReturnValue({
+      data: null,
+      error: null,
+      isLoading: true,
+      isFetching: true,
+      refetch: vi.fn(),
+    });
 
-  const server = setupServer(...handlers);
-
-  beforeAll(() => server.listen());
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => server.resetHandlers());
-
-  afterAll(() => server.close());
-
-  it('renders the CardDetails with the Loading state', async () => {
-    await waitFor(() =>
-      renderWithProviders(
-        <MemoryRouter>
-          <CardDetails />
-        </MemoryRouter>
-      )
+    render(
+      <ThemeContext.Provider value={mockThemeContext}>
+        <CardDetails params={{ id: '1' }} />
+      </ThemeContext.Provider>
     );
 
     expect(screen.getByTestId('skeleton-card-details')).toBeInTheDocument();
   });
 
   it('renders the CardDetails with the correct data', async () => {
-    renderWithProviders(
-      <MemoryRouter>
-        <CardDetails />
-      </MemoryRouter>
-    );
-
-    expect(
-      await screen.findByText(mockCardListData.results[0].title)
-    ).toBeInTheDocument();
-  });
-
-  it('renders the CardDetails with the correct data and click Close btn', async () => {
-    const handleUseNavigationSpy = vi.fn();
-    useNavigateSpy.mockImplementation(() => handleUseNavigationSpy);
-
-    renderWithProviders(
-      <MemoryRouter>
-        <CardDetails />
-      </MemoryRouter>
-    );
-
-    await userEvent.click(await screen.findByTestId('close-btn'));
-
-    expect(handleUseNavigationSpy).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('CardDetails Component Errors', () => {
-  const errorMessage = 'Failed to fetch data';
-
-  const getSearchResultSpy = vi.spyOn(services, 'useGetSearchItemQuery');
-
-  it('renders the CardDetails with Error message', async () => {
-    getSearchResultSpy.mockImplementationOnce(() => ({
-      data: null,
-      error: { message: errorMessage },
+    vi.mocked(useGetSearchItemQuery).mockReturnValue({
+      data: mockData,
+      error: null,
       isLoading: false,
+      isFetching: false,
       refetch: vi.fn(),
-    }));
+    });
 
-    renderWithProviders(
-      <MemoryRouter>
-        <CardDetails />
-      </MemoryRouter>
+    render(
+      <ThemeContext.Provider value={mockThemeContext}>
+        <CardDetails params={{ id: '1' }} />
+      </ThemeContext.Provider>
     );
 
-    expect(await screen.findByText(errorMessage)).toBeInTheDocument();
+    expect(await screen.findByText('Test Title')).toBeInTheDocument();
+    expect(screen.getByText('Author 1')).toBeInTheDocument();
+    expect(screen.getByText('Summary 1')).toBeInTheDocument();
+    expect(screen.getByText('Bookshelf 1')).toBeInTheDocument();
+    expect(screen.getByText('Subject 1')).toBeInTheDocument();
+    expect(screen.getByText('en')).toBeInTheDocument();
   });
 
-  it('renders the CardDetails with Error message from error object', async () => {
-    getSearchResultSpy.mockImplementationOnce(() => ({
+  it('renders the Error component when there is an error', async () => {
+    vi.mocked(useGetSearchItemQuery).mockReturnValue({
       data: null,
-      error: { status: 500, error: errorMessage },
+      error: mockError,
       isLoading: false,
+      isFetching: false,
       refetch: vi.fn(),
-    }));
+    });
 
-    renderWithProviders(
-      <MemoryRouter>
-        <CardDetails />
-      </MemoryRouter>
+    render(
+      <ThemeContext.Provider value={mockThemeContext}>
+        <CardDetails params={{ id: '1' }} />
+      </ThemeContext.Provider>
     );
 
-    expect(await screen.findByText(errorMessage)).toBeInTheDocument();
+    expect(await screen.findByText('Failed to fetch data')).toBeInTheDocument();
+  });
+
+  it('calls router.push when Close button is clicked', async () => {
+    const mockPush = vi.fn();
+    vi.mocked(useGetSearchItemQuery).mockReturnValue({
+      data: mockData,
+      error: null,
+      isLoading: false,
+      isFetching: false,
+      refetch: vi.fn(),
+    });
+
+    vi.spyOn(routerApi, 'useRouter').mockReturnValue({
+      push: mockPush,
+      back: vi.fn(),
+      forward: vi.fn(),
+      refresh: vi.fn(),
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+    });
+
+    render(
+      <ThemeContext.Provider value={mockThemeContext}>
+        <CardDetails params={{ id: '1' }} />
+      </ThemeContext.Provider>
+    );
+
+    await userEvent.click(screen.getByTestId('close-btn'));
+
+    expect(mockPush).toHaveBeenCalledWith('/');
   });
 });

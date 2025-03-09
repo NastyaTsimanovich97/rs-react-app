@@ -1,7 +1,10 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
-import { selectedCardAdded, selectedCardDeleted } from '../app/cardsSlice';
-import { useAppDispatch } from '../app/hooks';
+import {
+  selectedCardAdded,
+  selectedCardDeleted,
+} from '../app/store/cardsSlice';
+import { useAppDispatch } from '../app/store/hooks';
 import { spliceDescription } from '../utils/spliceDescription.util';
 import { Checkbox } from './Checkbox';
 import ThemeContext from '../context/themeContext';

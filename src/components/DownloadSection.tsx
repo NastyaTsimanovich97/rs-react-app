@@ -1,8 +1,9 @@
+import React from 'react';
 import { saveAs } from 'file-saver';
 
-import { allSelectedCardsDeleted } from '../app/cardsSlice';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { Button } from '../components/Button';
+import { allSelectedCardsDeleted } from '../app/store/cardsSlice';
+import { useAppDispatch, useAppSelector } from '../app/store/hooks';
+import { Button } from './Button';
 
 export function DownloadSection() {
   const dispatch = useAppDispatch();

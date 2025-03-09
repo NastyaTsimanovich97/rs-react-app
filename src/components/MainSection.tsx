@@ -1,4 +1,5 @@
-import { CardList } from '../components/CardList';
+import React from 'react';
+import { CardList } from './CardList';
 
 interface IMainSectionProps {
   searchValue: string;

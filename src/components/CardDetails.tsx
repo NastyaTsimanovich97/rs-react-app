@@ -1,24 +1,30 @@
-import { useContext } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { SkeletonCardDetails } from './SkeletonCardDetails';
 import ThemeContext from '../context/themeContext';
 import { useGetSearchItemQuery } from '../services/getSearchResult';
 import { Error } from './Error';
 
-export function CardDetails() {
-  const theme = useContext(ThemeContext);
+interface CardDetailsProps {
+  params: { id: string };
+}
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const params = useParams();
+export default function CardDetails({ params }: CardDetailsProps) {
+  const theme = useContext(ThemeContext);
+  const id = params.id;
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const { data, isFetching, isLoading, error } = useGetSearchItemQuery({
-    id: params.id,
+    id,
   });
 
   const handleClose = () => {
-    navigate(`/${location.search}`);
+    router.push(
+      `/${searchParams.toString() ? `?${searchParams.toString()}` : ''}`
+    );
   };
 
   return (

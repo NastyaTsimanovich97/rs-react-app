@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface IButtonProps {
   label: string;
   handleClick: () => void;
