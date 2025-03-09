@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import ErrorButton from '../components/ErrorButton';
 import { HeaderSection } from '../components/HeaderSection';
@@ -7,15 +7,14 @@ import { MainSection } from '../components/MainSection';
 import { DownloadSection } from '../components/DownloadSection';
 import ThemeContext from '../context/themeContext';
 
-function SearchPage() {
+function SearchPage({ children }: { children?: React.ReactNode }) {
   const theme = useContext(ThemeContext);
 
   const [searchValue, setSearchValue] = useLocalStorage();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const detailsId = params.id;
+  const detailsId = searchParams.get('id');
 
   const onUpdateSearch = (searchValue: string) => {
     setSearchValue(searchValue || '');
@@ -23,7 +22,7 @@ function SearchPage() {
 
   const handleCloseDetails = () => {
     if (detailsId) {
-      navigate(`/${location.search}`);
+      router.push(`/${searchParams.toString()}`);
     }
   };
 
@@ -38,7 +37,7 @@ function SearchPage() {
           />
           <ErrorButton />
         </div>
-        <Outlet />
+        <div>{children}</div>
       </div>
       <DownloadSection />
     </div>

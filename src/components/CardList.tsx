@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useSearchParams, useNavigate, useLocation } from 'react-router';
 import { Card } from './Card';
 import { SkeletonCardList } from './SkeletonCardList';
 import Pagination from './Pagination';
@@ -7,15 +6,16 @@ import { getURLParams } from '../utils/getURLParams.util';
 import { useAppSelector } from '../app/store/hooks';
 import { useGetSearchResultQuery } from '../services/getSearchResult';
 import { Error } from './Error';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface ICardListProps {
   searchValue: string;
 }
 
 export function CardList(props: ICardListProps) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const initPage = searchParams.get('page')
     ? Number(searchParams.get('page'))
@@ -35,16 +35,24 @@ export function CardList(props: ICardListProps) {
   const prev = data?.previous ? getURLParams(data?.previous, 'page') : null;
   const prevPage = data?.previous && !prev ? '1' : prev;
 
-  const onPageChange = (page: string | null) => {
-    setPage(page ? Number(page) : null);
-    if (page) {
-      searchParams.set('page', page);
-      setSearchParams(searchParams);
+  const onPageChange = (newPage: string | null) => {
+    setPage(newPage ? Number(newPage) : null);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    if (newPage) {
+      newSearchParams.set('page', newPage);
+    } else {
+      newSearchParams.delete('page');
     }
+
+    router.push(`${pathname}?${newSearchParams.toString()}`);
   };
 
   const onCardClick = (id: string) => {
-    navigate(`details/${id}${location.search}`);
+    const newSearchParams = searchParams.toString();
+    router.push(
+      `/details/${id}${newSearchParams ? `?${newSearchParams}` : ''}`
+    );
   };
 
   if (error) {
